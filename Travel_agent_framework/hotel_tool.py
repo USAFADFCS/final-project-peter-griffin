@@ -1,6 +1,9 @@
 import requests
 import json
 from fairlib.core.interfaces.tools import AbstractTool
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 class HotelTool(AbstractTool):
     def __init__(self):
@@ -28,8 +31,8 @@ class HotelTool(AbstractTool):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         api_key = {
             "grant_type":"client_credentials",
-            "client_id":"Wfu8DWyUjgHDfzjzOwXDJLZb6THWv9iZ",
-            "client_secret":"xMnzA2dQP4o5GsCE"
+            "client_id":os.getenv("AMADEUS_KEY"),
+            "client_secret":os.getenv("AMADEUS_SECRET")
         }
 
         response = requests.post(base_url, headers=headers, data=api_key).json()

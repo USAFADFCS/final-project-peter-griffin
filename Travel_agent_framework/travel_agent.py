@@ -10,6 +10,7 @@ The agent supports:
 This serves as a practical tutorial for combining multiple tools under the FAIR-LLM framework.
 """
 import asyncio
+import os
 
 # --- Step 1: Import necessary framework components ---
 from fairlib import (
@@ -37,7 +38,7 @@ async def main():
 
     # === (a) Brain: Language Model ===
     # Uses dolphin3-qwen25-3b for reasoning and decision making
-    llm = HuggingFaceAdapter("dolphin3-qwen25-3b", auth_token=)
+    llm = HuggingFaceAdapter("dolphin3-qwen25-3b", auth_token=os.getenv("HF_WRITE_TOKEN"))
     
     # === (b) Toolbelt: Register both calculator and calculus tools ===
     tool_registry = ToolRegistry()
