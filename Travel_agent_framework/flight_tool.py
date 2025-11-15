@@ -78,7 +78,7 @@ class FlightTool(AbstractTool):
                 price = offer["price"]["total"]
                 itineraries = offer["itineraries"]
                 output_str += f"\n Option {offer_num}"
-                output_str += (f"\n  Total Price: {price}")
+                output_str += (f"\n   Total Price: {price}")
                 for i, itinerary in enumerate(itineraries, start=1):
                     if i == 1: output_str += (f"\n   Departure:")
                     else: output_str += (f"\n   Return:")

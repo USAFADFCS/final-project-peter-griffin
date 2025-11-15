@@ -11,6 +11,9 @@ This serves as a practical tutorial for combining multiple tools under the FAIR-
 """
 import asyncio
 import os
+# load API keys from .env
+from dotenv import load_dotenv
+load_dotenv()
 
 # --- Step 1: Import necessary framework components ---
 from fairlib import (
@@ -20,12 +23,11 @@ from fairlib import (
     SimpleAgent,
     RoleDefinition, 
     HuggingFaceAdapter,
-    SimpleReActPlanner
+    SimpleReActPlanner,
+    OpenAIAdapter
 )
 
 # --- Step 2: Import the additiojnal tools we want this agent to use ---
-# NOTE: SafeCalculatorTool is a built-in tool while AdvancedCalculusTool 
-# is a tool we built to extend beyond our basic built-in tools.
 from hotel_tool import HotelTool
 from flight_tool import FlightTool
 
@@ -34,11 +36,13 @@ async def main():
     Main entry point for the demo agent.
     This sets up the brain, memory, planner, tools, and interaction loop.
     """
+
     print("🔧 Initializing the Flight Tool + Flight Agent...")
 
     # === (a) Brain: Language Model ===
     # Uses dolphin3-qwen25-3b for reasoning and decision making
-    llm = HuggingFaceAdapter("dolphin3-qwen25-3b", auth_token=os.getenv("HF_WRITE_TOKEN"))
+    llm = OpenAIAdapter(model_name="gpt-5-nano")
+    #llm = HuggingFaceAdapter("dolphin3-qwen25-3b", auth_token=os.getenv("HF_WRITE_TOKEN"))
     
     # === (b) Toolbelt: Register both calculator and calculus tools ===
     tool_registry = ToolRegistry()
@@ -69,6 +73,7 @@ async def main():
     RoleDefinition(
         "You are an advanced travel agent whose job it is to find the best flights.\n"
         "You must adhere to the user's constraints for time, budget, and destinations."
+        "If you do not have enough information to complete the request you will ask clarifying questions."
     )
 
     # === (f) Assemble the Agent ===
