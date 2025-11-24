@@ -10,6 +10,9 @@ load_dotenv()
 class HotelTool(AbstractTool):
     def __init__(self):
         super().__init__()
+        self.api_endpoint = "api.amadeus.com" # production environment
+        # self.api_endpoint = "api.amadeus.com" # test environment
+
         self.token = self.get_auth_token()
 
     name = "hotel_search_tool"
@@ -66,7 +69,7 @@ class HotelTool(AbstractTool):
         return output_str
 
     def get_auth_token(self):
-        base_url = "https://test.api.amadeus.com/v1/security/oauth2/token"
+        base_url = f"https://{self.api_endpoint}/v1/security/oauth2/token"
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         api_key = {
             "grant_type":"client_credentials",
@@ -79,7 +82,7 @@ class HotelTool(AbstractTool):
         return token
     
     def list_hotels(self, hotelInfo):
-        base_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city"
+        base_url = f"https://{self.api_endpoint}/v1/reference-data/locations/hotels/by-city"
         
         # Gather user input
         cityCode = hotelInfo["CITYCODE"].strip().upper()
@@ -107,7 +110,7 @@ class HotelTool(AbstractTool):
             return(f"API request failed: {e}")
 
     def search_hotels(self, hotelInfo, hotelIDs):
-        base_url = "https://test.api.amadeus.com/v3/shopping/hotel-offers"
+        base_url = f"https://{self.api_endpoint}/v3/shopping/hotel-offers"
         
         # Gather user input
         adults = hotelInfo["ADULTS"].strip()
@@ -117,39 +120,28 @@ class HotelTool(AbstractTool):
 
         # Optional: you could also let users specify returnDate, adults, etc.
         params = {
-            "hotelIds": hotelIDs[0],
+            "hotelIds": hotelIDs[0:10],
             "adults": adults,
             "checkInDate": checkInDate,
             "checkOutDate": checkOutDate,
             "priceRange": priceRange,
             "currency": "USD",
-            "includeClosed":"True"
+            #"includeClosed":"True"
         }
 
         headers = {
             "Authorization": "Bearer " + self.token
         }
 
-        output_str = ""
-        output_str += "--- Hotel Options: ---\n"
-        for id in tqdm(hotelIDs, desc=f"Finding hotel options"):
-            params["hotelIds"] = id
+        try:
             r = requests.get(base_url, headers=headers, params=params)
-
-            # print("REQUEST URL:", r.url)
-            # print("STATUS:", r.status_code)
-            # print("RESPONSE BODY:", r.text)
-
-            try:
-                r.raise_for_status()
-                data = r.json()
-                output_str += self.format_hotels(data)
-                
-            except requests.exceptions.HTTPError as e:
-                # show the server error body to reason about the 400
-                ##print(f"API error: {e}")
-                pass
+            data = r.json()
+            output_str = self.format_hotels(data)
+        except requests.exceptions.HTTPError as e:
+            output_str = e
+        
         return output_str
+
 
 if __name__ == "__main__":
     tool = HotelTool()

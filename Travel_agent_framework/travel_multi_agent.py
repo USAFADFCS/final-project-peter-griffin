@@ -83,7 +83,7 @@ async def main():
         [hotel_tool],
         "A research agent that uses a hotel tool to find current, real-time information on hotel options."
     )
-    print("   ✓ Flight Researcher agent created")
+    print("   ✓ Hotel Researcher agent created")
 
     # The Analyst: Its only tool is the SafeCalculator
     analyst = create_agent(
@@ -93,15 +93,22 @@ async def main():
     )
     print("   ✓ Analyst agent created")
 
-
+    # itinerary builder: no tools, used by manager to produce nice output
+    itinerary_builder = create_agent(
+        llm,
+        [],
+        "An itinerary builder, takes flight and hotel information to build a nice looking output."
+    )
+    
 
     # We organize the workers in a dictionary so the manager can find them by name.
-    workers = {"Flight_researcher": flight_researcher, "Analyst": analyst, "Hotel_researcher": hotel_researcher}
+    workers = {"flight_researcher": flight_researcher, "analyst": analyst, "hotel_researcher": hotel_researcher}
 
     # --- Step 4: Create the Manager Agent ---
     manager_memory = WorkingMemory()
     manager_planner = ManagerPlanner(llm, workers)
     manager_agent = SimpleAgent(llm, manager_planner, None, manager_memory)
+    manager_agent.role_description = "The manager of a travel agency who helps people plan vacations."
     print("   ✓ Manager agent created")
 
     # --- Step 5: Initialize the Hierarchical Runner ---
@@ -109,7 +116,7 @@ async def main():
     print("\n🚀 Agent team ready!\n")
     
     # === (g) Interaction Loop ===
-    # Please plan me a week long trip to Berlin starting December 22nd. I want you to find flights, hotels, and general activities to do while there. I'm leaving from Boston and want the flight and hotel costs to be reasonable. 
+    # Plan me a week long trip to Berlin starting December 22nd. I want you to find flights, hotels, and general activities to do while there. I'm leaving from Boston and want the flight and hotel costs to be reasonable. You will select the cheapest flight option and the cheapest hotel option and output a formatted trip itinerary with flight info, hotel info, and activites for each day.
     while True:
         try:
             user_input = input("👤 You: ")

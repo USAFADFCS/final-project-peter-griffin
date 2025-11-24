@@ -12,14 +12,13 @@ class FlightTool(AbstractTool):
         # self.api_endpoint = "api.amadeus.com" # test environment
 
         self.token = self.get_auth_token()
-    
-    name = "flight_search_tool"
+
+    name = "flight_booking_tool"
     description = (
-        "A tool for finding flights."
+        "A tool for booking flights."
         "Inputs must follow the exact format of the examples, with no additional entries."
         "Example inputs:\n"
-        '{"Origin": "DEN", "Destination": "MCO",  "Departure": "2025-11-20", "Return":"2025-11-22", "Max_Price": "600"}\n'
-        '{"Origin": "BOS", "Destination": "LAX",  "Departure": "2026-01-17", "Return":"2025-11-22", "Max_Price": "750"}'
+        '{"Origin": "DEN", "Destination": "BOS", "Departure": "2025-12-10", "Return": "2025-12-13", "Max_Price": "300"}'
     )
 
     def use(self, expression: str) -> str:
@@ -51,7 +50,10 @@ class FlightTool(AbstractTool):
         destination = flightInfo["DESTINATION"].strip().upper()
         departure_date = flightInfo["DEPARTURE"].strip()
         max_price = flightInfo["MAX_PRICE"].strip()
-        return_date = flightInfo["RETURN"].strip()
+        try:
+            return_date = flightInfo["RETURN"].strip()
+        except:
+            return_date = None
 
         # Optional: you could also let users specify returnDate, adults, etc.
         params = {
@@ -64,8 +66,7 @@ class FlightTool(AbstractTool):
             "returnDate":return_date
         }
 
-        # Replace this with your real token
-        token = self.token
+        token = self.get_auth_token()
         headers = {
             "Authorization": "Bearer " + token
         }
