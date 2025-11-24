@@ -1,7 +1,6 @@
 import asyncio
 import os
-
-
+import json
 
 # --- Step 1: Import all necessary components ---
 from fairlib import (
@@ -17,16 +16,16 @@ from fairlib import (
     ManagerPlanner,
     HierarchicalAgentRunner
 )
-
 from hotel_tool import HotelTool
 from flight_tool import FlightTool
 
+# LOAD API KEYS AND SETTNGS FROM ENV VARS
 from dotenv import load_dotenv
 load_dotenv()
-
-# LOAD API KEYS AND SETTNGS FROM ENV VARS
 settings.api_keys.openai_api_key = os.getenv("OPENAI_API_KEY")
 
+# helper function to create agents to work for the manager
+# written by fairllm in the demo_multi_agent.py
 def create_agent(llm, tools, role_description):
     """
     A helper factory function to simplify the creation of worker agents.
@@ -47,7 +46,7 @@ def create_agent(llm, tools, role_description):
     agent.role_description = role_description
     return agent
 
-
+# main function to set up agents and produce an itinerary
 async def main():
     """
     The main function to set up and run the multi-agent system.
@@ -117,22 +116,44 @@ async def main():
     
     # === (g) Interaction Loop ===
     # Plan me a week long trip to Berlin starting December 22nd. I want you to find flights, hotels, and general activities to do while there. I'm leaving from Boston and want the flight and hotel costs to be reasonable. You will select the cheapest flight option and the cheapest hotel option and output a formatted trip itinerary with flight info, hotel info, and activites for each day.
-    while True:
-        try:
-            user_input = input("👤 You: ")
-            if user_input.lower() in ["exit", "quit"]:
-                print("🤖 Agent: Goodbye! 👋")
-                break
+    # while True:
+    #     try:
+    #         user_input = input("👤 You: ")
+    #         if user_input.lower() in ["exit", "quit"]:
+    #             print("🤖 Agent: Goodbye! 👋")
+    #             break
 
-            # Run the agent’s full Reason+Act cycle
-            agent_response = await team_runner.arun(user_input)
-            print(f"🤖 Agent: {agent_response}")
+    #         # Run the agent’s full Reason+Act cycle
+    #         agent_response = await team_runner.arun(user_input)
+    #         print(f"🤖 Agent: {agent_response}")
 
-        except KeyboardInterrupt:
-            print("\n🤖 Agent: Session ended by user.")
-            break
-        except Exception as e:
-            print(f"❌ Agent error: {e}")
+    #     except KeyboardInterrupt:
+    #         print("\n🤖 Agent: Session ended by user.")
+    #         break
+    #     except Exception as e:
+    #         print(f"❌ Agent error: {e}")
+    
+    # ======== Prompt and response ==============
+    user_request = input("Where do you want to go and when: ")
+    workflow_steps = [
+        "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints",
+        "Delegate to the the 'hotel_researcher' to find hotel options, pick a hotel based on user constraints",
+        "Come up with activites for each day",
+    ]
+    master_prompt = f"""
+    Coordinate with your team to produce a vacation plan for the user.
+    For each location specified in the user request you will:
+    {"".join([f"{i+1}. {step}\n" for i, step in enumerate(workflow_steps)])}
+    Then you will produce a formatted itinerary with flight info, hotel info, and activites for each day of the trip.\n\n
+    USER REQUEST: {user_request}
+    """
+    
+    try:
+        final_evaluation = await team_runner.arun(master_prompt)
+        print("\n\n==============TRAVEL ITINERARY==============\n\n")
+        print(final_evaluation)
+    except Exception as e:
+        print(json.dumps({"error": f"A critical error occurred during the agent execution for this essay. Details: {e}"}))
 
 
 
