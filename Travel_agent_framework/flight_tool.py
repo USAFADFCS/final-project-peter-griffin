@@ -60,7 +60,7 @@ class FlightTool(AbstractTool):
             "departureDate": departure_date,
             "adults": 1,
             "maxPrice": max_price,
-            "max": 10,
+            "max": 20,
             "returnDate":return_date
         }
 

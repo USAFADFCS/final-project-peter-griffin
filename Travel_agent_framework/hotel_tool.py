@@ -120,7 +120,7 @@ class HotelTool(AbstractTool):
 
         # Optional: you could also let users specify returnDate, adults, etc.
         params = {
-            "hotelIds": hotelIDs[0:10],
+            "hotelIds": hotelIDs[0:30],
             "adults": adults,
             "checkInDate": checkInDate,
             "checkOutDate": checkOutDate,

@@ -72,7 +72,7 @@ async def main():
     flight_researcher = create_agent(
         llm, 
         [flight_tool],
-        "A research agent that uses a flight tool to find current, real-time information on flights."
+        "A research agent that uses a flight tool to find current, real-time information on flights. If you cannot meet set requirements you will return the closest options."
     )
     print("   ✓ Flight Researcher agent created")
     
@@ -80,7 +80,7 @@ async def main():
     hotel_researcher = create_agent(
         llm, 
         [hotel_tool],
-        "A research agent that uses a hotel tool to find current, real-time information on hotel options."
+        "A research agent that uses a hotel tool to find current, real-time information on hotel options. If you cannot meet set requirements you will return the closest options."
     )
     print("   ✓ Hotel Researcher agent created")
 
@@ -138,13 +138,15 @@ async def main():
     workflow_steps = [
         "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints",
         "Delegate to the the 'hotel_researcher' to find hotel options, pick a hotel based on user constraints",
+        "Delegate to the analyst to calculate total cost of flights and hotels. If the user defined a budget ensure the total price is within that."
         "Come up with activites for each day",
     ]
     master_prompt = f"""
-    Coordinate with your team to produce a vacation plan for the user.
-    For each location specified in the user request you will:
+    Coordinate with your team to produce a vacation plan for the user.\n
+    Follow the user request in planning the trip. If the request is specific you will follow their request, if it is non-specific you will still plan a specific trip based on their request, selecting locations and activities you believe the user will enjoy.\n 
+    For each location in the trip you will:
     {"".join([f"{i+1}. {step}\n" for i, step in enumerate(workflow_steps)])}
-    Then you will produce a formatted itinerary with flight info, hotel info, and activites for each day of the trip.\n\n
+    Then you will produce a formatted itinerary with flight info (including flight number), hotel info, and activites for each day of the trip.\n\n
     USER REQUEST: {user_request}
     """
     
@@ -153,7 +155,7 @@ async def main():
         print("\n\n==============TRAVEL ITINERARY==============\n\n")
         print(final_evaluation)
     except Exception as e:
-        print(json.dumps({"error": f"A critical error occurred during the agent execution for this essay. Details: {e}"}))
+        print(json.dumps({"error": f"A an error occurred: {e}"}))
 
 
 
