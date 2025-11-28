@@ -1,6 +1,10 @@
 import asyncio
 import os
 import json
+import sys
+
+os.environ["PYTHONUTF8"] = "1"
+sys.stdout.reconfigure(encoding='utf-8')
 
 # --- Step 1: Import all necessary components ---
 from fairlib import (
@@ -101,12 +105,17 @@ async def main():
     
 
     # We organize the workers in a dictionary so the manager can find them by name.
-    workers = {"flight_researcher": flight_researcher, "analyst": analyst, "hotel_researcher": hotel_researcher}
+    workers = {"flight_researcher": flight_researcher, "analyst": analyst, "hotel_researcher": hotel_researcher, "itinerary_builder": itinerary_builder}
 
     # --- Step 4: Create the Manager Agent ---
     manager_memory = WorkingMemory()
     manager_planner = ManagerPlanner(llm, workers)
-    manager_agent = SimpleAgent(llm, manager_planner, None, manager_memory)
+    manager_tool_registry = ToolRegistry()
+    manager_tool_registry.register_tool(FlightTool())
+    manager_tool_registry.register_tool(HotelTool())
+    manager_tool_registry.register_tool(SafeCalculatorTool())
+    manager_executor = ToolExecutor(manager_tool_registry)
+    manager_agent = SimpleAgent(llm, manager_planner, manager_executor, manager_memory)
     manager_agent.role_description = "The manager of a travel agency who helps people plan vacations."
     print("   ✓ Manager agent created")
 
@@ -138,7 +147,7 @@ async def main():
     workflow_steps = [
         "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints",
         "Delegate to the the 'hotel_researcher' to find hotel options, pick a hotel based on user constraints",
-        "Delegate to the analyst to calculate total cost of flights and hotels. If the user defined a budget ensure the total price is within that."
+        "Delegate to the analyst to calculate total cost of flights and hotels. If the user defined a budget ensure the total price is within that.",
         "Come up with activites for each day",
     ]
     master_prompt = f"""

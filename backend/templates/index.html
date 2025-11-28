@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Agent Travel Planner</title>
+</head>
+<body>
+<h1>Multi-Agent Travel Planner</h1>
+<form action="/plan" method="post">
+<label>Origin (airport code): <input name="origin" value="DEN"></label><br>
+<label>Destination (city): <input name="destination" value="Rome, Italy"></label><br>
+<label>Departure date: <input type="date" name="departure_date" required></label><br>
+<label>Nights: <input name="nights" value="7" type="number"></label><br>
+<label>Budget (USD): <input name="budget" value="4000"></label><br>
+<button type="submit">Plan Trip</button>
+</form>
+<p>When you submit, the server runs the multi-agent script and returns a PDF itinerary.</p>
+</body>
+</html>
