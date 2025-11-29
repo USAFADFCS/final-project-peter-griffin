@@ -1,20 +1,119 @@
 <!doctype html>
 <html lang="en">
+
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Multi-Agent Travel Planner</title>
+
+<style>
+    body {
+        font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #f7f9fc;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    .container {
+        max-width: 500px;
+        margin: 60px auto;
+        background: #fff;
+        padding: 35px 45px;
+        border-radius: 12px;
+        box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 28px;
+        font-weight: 600;
+        color: #222;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 15px;
+        font-weight: 500;
+    }
+
+    input {
+        margin-top: 6px;
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+        border-color: #0078ff;
+        outline: none;
+        box-shadow: 0 0 4px rgba(0,120,255,0.3);
+    }
+
+    button {
+        margin-top: 20px;
+        width: 100%;
+        background: #0078ff;
+        color: #fff;
+        padding: 12px;
+        font-size: 17px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.25s ease;
+    }
+
+    button:hover {
+        background: #005fcc;
+    }
+
+    p {
+        text-align: center;
+        font-size: 14px;
+        margin-top: 20px;
+        color: #666;
+    }
+</style>
 </head>
+
 <body>
-<h1>Multi-Agent Travel Planner</h1>
-<form action="/plan" method="post">
-<label>Origin (airport code): <input name="origin" value="DEN"></label><br>
-<label>Destination (city): <input name="destination" value="Rome, Italy"></label><br>
-<label>Departure date: <input type="date" name="departure_date" required></label><br>
-<label>Nights: <input name="nights" value="7" type="number"></label><br>
-<label>Budget (USD): <input name="budget" value="4000"></label><br>
-<button type="submit">Plan Trip</button>
-</form>
-<p>When you submit, the server runs the multi-agent script and returns a PDF itinerary.</p>
+
+<div class="container">
+    <h1>Multi-Agent Travel Planner</h1>
+
+    <form action="/plan" method="post">
+
+        <label>Origin (airport code):
+            <input name="origin" value="DEN">
+        </label>
+
+        <label>Destination (city):
+            <input name="destination" value="Rome, Italy">
+        </label>
+
+        <label>Departure date:
+            <input type="date" name="departure_date" required>
+        </label>
+
+        <label>Nights:
+            <input name="nights" value="7" type="number">
+        </label>
+
+        <label>Budget (USD):
+            <input name="budget" value="4000">
+        </label>
+
+        <button type="submit">Plan Trip</button>
+    </form>
+
+    <p>Your custom AI-powered itinerary will be generated as a PDF.</p>
+</div>
+
 </body>
 </html>
