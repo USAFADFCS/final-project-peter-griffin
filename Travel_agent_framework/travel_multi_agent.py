@@ -84,7 +84,7 @@ async def main():
     hotel_researcher = create_agent(
         llm, 
         [hotel_tool],
-        "A research agent that uses a hotel tool to find current, real-time information on hotel options. If you cannot meet set requirements you will return the closest options."
+        "A research agent that uses a hotel tool to find current, real-time information on hotel options given a city and dates. Cannot search for specific neighborhoods"
     )
     print("   ✓ Hotel Researcher agent created")
 
@@ -92,20 +92,13 @@ async def main():
     analyst = create_agent(
         llm,
         [SafeCalculatorTool()],
-        "An analyst agent that performs mathematical calculations using a safe calculator."
+        "An analyst agent that performs mathematical calculations using a safe calculator. Numbers and exchange rates must be directly provided to the analyst to make calculations."
     )
     print("   ✓ Analyst agent created")
-
-    # itinerary builder: no tools, used by manager to produce nice output
-    itinerary_builder = create_agent(
-        llm,
-        [],
-        "An itinerary builder, takes flight and hotel information to build a nice looking output."
-    )
     
 
     # We organize the workers in a dictionary so the manager can find them by name.
-    workers = {"flight_researcher": flight_researcher, "analyst": analyst, "hotel_researcher": hotel_researcher, "itinerary_builder": itinerary_builder}
+    workers = {"flight_researcher": flight_researcher, "Analyst": analyst, "hotel_researcher": hotel_researcher}
 
     # --- Step 4: Create the Manager Agent ---
     manager_memory = WorkingMemory()
@@ -124,8 +117,6 @@ async def main():
     print("\n🚀 Agent team ready!\n")
     
     # === (g) Interaction Loop ===
-    # Plan me a week long trip to Berlin starting December 22nd. I want you to find flights, hotels, and general activities to do while there. I'm leaving from Boston and want the flight and hotel costs to be reasonable. You will select the cheapest flight option and the cheapest hotel option and output a formatted trip itinerary with flight info, hotel info, and activites for each day.
-    # while True:
     #     try:
     #         user_input = input("👤 You: ")
     #         if user_input.lower() in ["exit", "quit"]:
@@ -145,18 +136,23 @@ async def main():
     # ======== Prompt and response ==============
     user_request = input("Where do you want to go and when: ")
     workflow_steps = [
-        "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints",
-        "Delegate to the the 'hotel_researcher' to find hotel options, pick a hotel based on user constraints",
-        "Delegate to the analyst to calculate total cost of flights and hotels. If the user defined a budget ensure the total price is within that.",
+        "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints. The returned price will be for 1 adult, and so total cost will need to be calculated for more than one adult.",
+        "Delegate to the the 'hotel_researcher' to find hotel options, pick a hotel based on user constraints. You WILL NOT request locations more specific than a city, DO NOT request specific neighboorhoods or attractions.",
         "Come up with activites for each day",
     ]
     master_prompt = f"""
     Coordinate with your team to produce a vacation plan for the user.\n
-    Follow the user request in planning the trip. If the request is specific you will follow their request, if it is non-specific you will still plan a specific trip based on their request, selecting locations and activities you believe the user will enjoy.\n 
-    For each location in the trip you will:
+    Use the user's request as a guide for planning. If the request is specific you will follow their request, if it is non-specific you will still plan a specific trip based on their request, selecting locations and activities you believe the user will enjoy.\n 
+    After locations have been selected
+    for each location in the trip you will:\n
     {"".join([f"{i+1}. {step}\n" for i, step in enumerate(workflow_steps)])}
-    Then you will produce a formatted itinerary with flight info (including flight number), hotel info, and activites for each day of the trip.\n\n
-    USER REQUEST: {user_request}
+    You will then select one flight and hotel pairing for the trip\n
+    Finally, Delegate to the analyst to calculate the total cost of flights (taking into account the number of tickets needed) and hotels (this means the tool name will be "delegate", and tool input will be json containing the "worker_name" and the "task", you WILL NOT attempt to use the Analyst as the tool name, this WILL NOT WORK). If the user defined a budget ensure the total price is within that, or the lowest cost flights and hotels were chosen if the user's budget is too low to be met.\n
+    Then you will produce a well formatted itinerary with flight info (including flight number), hotel info, and activites for each day of the trip.
+    You will NOT produce conversational text or questions in the final initerary, you will just include the information relevant to the trip.
+    \n\n
+    USER REQUEST:\n
+    {user_request}
     """
     
     try:

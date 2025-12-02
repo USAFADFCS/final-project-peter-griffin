@@ -17,9 +17,10 @@ class FlightTool(AbstractTool):
     description = (
         "A tool for finding flights."
         "Inputs must follow the exact format of the examples, with no additional entries."
+        "Leave out the return date field if you are looking for a one way flight"
         "Example inputs:\n"
         '{"Origin": "DEN", "Destination": "MCO",  "Departure": "2025-11-20", "Return":"2025-11-22", "Max_Price": "600"}\n'
-        '{"Origin": "BOS", "Destination": "LAX",  "Departure": "2026-01-17", "Return":"2025-11-22", "Max_Price": "750"}'
+        '{"Origin": "BOS", "Destination": "LAX",  "Departure": "2026-01-17", "Max_Price": "750"}'
     )
 
     def use(self, expression: str) -> str:
@@ -51,7 +52,10 @@ class FlightTool(AbstractTool):
         destination = flightInfo["DESTINATION"].strip().upper()
         departure_date = flightInfo["DEPARTURE"].strip()
         max_price = flightInfo["MAX_PRICE"].strip()
-        return_date = flightInfo["RETURN"].strip()
+        try:
+            return_date = flightInfo["RETURN"].strip()
+        except:
+            return_date = ""
 
         # Optional: you could also let users specify returnDate, adults, etc.
         params = {
@@ -61,8 +65,9 @@ class FlightTool(AbstractTool):
             "adults": 1,
             "maxPrice": max_price,
             "max": 20,
-            "returnDate":return_date
         }
+        if return_date:
+            params["returnDate"] = return_date
 
         # Replace this with your real token
         token = self.token
@@ -102,5 +107,5 @@ class FlightTool(AbstractTool):
 
 if __name__ == "__main__":
     tool = FlightTool()
-    flights = tool.use('{"Origin": "DEN", "Destination": "BOS", "Departure": "2025-12-10", "Return": "2025-12-13", "Max_Price": "300"}')
+    flights = tool.use('{"Origin": "DEN", "Destination": "BOS", "Departure": "2025-12-10", "Departure": "2025-12-13", "Max_Price": "300"}')
     print(flights)

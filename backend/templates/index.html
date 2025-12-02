@@ -89,8 +89,8 @@
 
     <form action="/plan" method="post">
 
-        <label>Origin (airport code):
-            <input name="origin" value="DEN">
+        <label>Origin:
+            <input name="origin" value="Denver">
         </label>
 
         <label>Destination (city):
@@ -108,7 +108,11 @@
         <label>Budget (USD):
             <input name="budget" value="4000">
         </label>
-
+        <label>Other Notes (interests, number of travelers, etc.)
+            <textarea name="notes" rows="5" cols="33">
+                None
+            </textarea>
+        </label>
         <button type="submit">Plan Trip</button>
     </form>
 

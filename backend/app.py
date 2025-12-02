@@ -26,13 +26,14 @@ async def index(request: Request):
 @app.post("/plan")
 async def plan(
     request: Request,
-    origin: str = Form("DEN"),
+    origin: str = Form("Denver"),
     destination: str = Form("Rome, Italy"),
     departure_date: str = Form(...),
     nights: int = Form(7),
-    budget: str = Form("4000")
+    budget: str = Form("4000"),
+    notes: str = Form("None")
 ):
-    user_request = f"I want to leave {origin} and go to {destination} for a week starting {departure_date}. I don't want to spend more than {budget} on flights and hotels."
+    user_request = f"I want to leave {origin} and go to {destination} for {nights} nights starting {departure_date}. I don't want to spend more than {budget} on flights and hotels. EXTRA NOTES: {notes}"
 
     try:
         itinerary_text = await asyncio.to_thread(
@@ -60,6 +61,7 @@ async def plan(
     body.fontName = "Helvetica"
     body.fontSize = 10
     body.leading = 14  # line spacing
+    body.encoding = "UTF-8"
 
     story = []
 
