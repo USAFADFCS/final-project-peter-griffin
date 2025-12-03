@@ -34,12 +34,13 @@ async def plan(
     notes: str = Form("None")
 ):
     user_request = f"I want to leave {origin} and go to {destination} for {nights} nights starting {departure_date}. I don't want to spend more than {budget} on flights and hotels. EXTRA NOTES: {notes}"
+    # I want to leave Denver and go to Alaska for 14 nights starting 06/03/2025. I don't want to spend more than 10000 on flights and hotels. EXTRA NOTES: 3 adults, interested in hiking and outdoors.
 
     try:
         itinerary_text = await asyncio.to_thread(
             run_multi_agent_and_get_itinerary,
             user_request,
-            1000  # timeout
+            5000  # timeout
         )
     except Exception as e:
         return {"error": str(e)}

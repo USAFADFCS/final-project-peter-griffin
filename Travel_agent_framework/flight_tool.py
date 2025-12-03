@@ -17,7 +17,7 @@ class FlightTool(AbstractTool):
     description = (
         "A tool for finding flights."
         "Inputs must follow the exact format of the examples, with no additional entries."
-        "Leave out the return date field if you are looking for a one way flight"
+        "Leave out the return date field if you are looking for a one way flight. Must specify Max_Price."
         "Example inputs:\n"
         '{"Origin": "DEN", "Destination": "MCO",  "Departure": "2025-11-20", "Return":"2025-11-22", "Max_Price": "600"}\n'
         '{"Origin": "BOS", "Destination": "LAX",  "Departure": "2026-01-17", "Max_Price": "750"}'
@@ -78,8 +78,8 @@ class FlightTool(AbstractTool):
         try:
 
             response = requests.get(base_url, headers=headers, params=params)
-            response.raise_for_status()
             data = response.json()
+            response.raise_for_status()
             output_str = ""
 
             output_str += ("--- Flight Options: ---\n")
@@ -102,10 +102,10 @@ class FlightTool(AbstractTool):
 
             return output_str
         except requests.exceptions.RequestException as e:
-            return(f"API request failed: {e}")
+            return(f"API request failed: {e}\nDetails: {data["errors"][0]["detail"]}")
 
 
 if __name__ == "__main__":
     tool = FlightTool()
-    flights = tool.use('{"Origin": "DEN", "Destination": "BOS", "Departure": "2025-12-10", "Departure": "2025-12-13", "Max_Price": "300"}')
+    flights = tool.use('{"Origin": "DEN", "Destination": "ANC", "Departure": "2025-06-03", "Return": "2025-06-17", "Max_Price": "750"}')
     print(flights)

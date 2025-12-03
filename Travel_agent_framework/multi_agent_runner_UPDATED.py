@@ -164,13 +164,13 @@ class ManagerPlanner(AbstractPlanner):
                 if not tool_name or tool_input is None:
                     raise KeyError("Parsed action JSON is missing 'tool_name' or 'tool_input'.")
                 
-                # Manager will sometimes use a worker as a tool instead of delegating to it
-                if(tool_name.lower() != "delegate"):
-                    print("TRIED TO USE A WORKER AS A TOOL")
-                    input = {"worker_name":tool_name, "task":tool_input}
-                    tool_name = "delegate"
-                    tool_input = input
-                # =======================================================
+            # Manager will sometimes use a worker as a tool instead of delegating to it
+            if(tool_name.lower() != "delegate"):
+                print("TRIED TO USE A WORKER AS A TOOL")
+                input = {"worker_name":tool_name, "task":tool_input}
+                tool_name = "delegate"
+                tool_input = input
+            # =======================================================
 
             print(f"\n\nPARSED OUTPUT- toolname = {tool_name} toolinput = {tool_input}\n\n")
             thought = Thought(text=thought_text if thought_text else "No thought provided.")
@@ -244,3 +244,9 @@ class HierarchicalAgentRunner:
 
         logger.warning("Agent team stopped after reaching max steps.")
         return "The team could not complete the request in the maximum number of steps."
+
+
+if __name__ == "__main__":
+    planner = ManagerPlanner(None, None)
+
+    planner._parse_json_response('Thought: Proceed to obtain Fairbanks hotel options for the remaining 7 nights (2026-01-20 to 2026-01-27) for 3 adults, city-wide search, mid-range to upscale with hiking/outdoor access in mind, so I can select a pairing after reviewing options. Action: {"tool_name": "hotel_researcher", "tool_input": "Search Fairbanks hotels for 7 nights (check-in 2026-01-20, check-out 2026-01-27) for 3 adults, city-wide (no neighborhoods), mid-range to upscale, with good access to hiking and outdoor activities."}')

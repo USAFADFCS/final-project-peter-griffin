@@ -65,7 +65,8 @@ class HotelTool(AbstractTool):
                 output_str += f"\n     Room Type: {room_type.replace('_',' ').title()}"
                 output_str += f"\n     Beds: {beds} ({bed_type.title()})"
                 output_str += f"\n     Description: {desc}"
-
+        if(len(data.get("data", [])) == 0):
+            output_str += "No available hotels."
         return output_str
 
     def get_auth_token(self):

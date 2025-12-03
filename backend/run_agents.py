@@ -31,7 +31,8 @@ def run_multi_agent_and_get_itinerary(user_request: str, timeout: int = 300) -> 
 
 
     stdout = proc.stdout
-
+    with open(r"C:\Users\Peter.Marriott\Documents\final-project-peter-griffin\backend\log.txt", "w") as fp:
+        fp.write(stdout)
 
     # Extract itinerary starting at the marker if present
     marker = '==============TRAVEL ITINERARY=============='

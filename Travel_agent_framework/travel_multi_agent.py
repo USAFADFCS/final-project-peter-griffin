@@ -61,7 +61,7 @@ async def main():
     print("\n📚 Initializing fairlib.core.components...")
     llm = OpenAIAdapter(
         api_key=settings.api_keys.openai_api_key,
-        model_name="gpt-5-nano"
+        model_name="gpt-4.1-2025-04-14"
     )
 
     # --- Step 3: Create Specialized Worker Agents ---
@@ -147,9 +147,9 @@ async def main():
     for each location in the trip you will:\n
     {"".join([f"{i+1}. {step}\n" for i, step in enumerate(workflow_steps)])}
     You will then select one flight and hotel pairing for the trip\n
-    Finally, Delegate to the analyst to calculate the total cost of flights (taking into account the number of tickets needed) and hotels (this means the tool name will be "delegate", and tool input will be json containing the "worker_name" and the "task", you WILL NOT attempt to use the Analyst as the tool name, this WILL NOT WORK). If the user defined a budget ensure the total price is within that, or the lowest cost flights and hotels were chosen if the user's budget is too low to be met.\n
-    Then you will produce a well formatted itinerary with flight info (including flight number), hotel info, and activites for each day of the trip.
-    You will NOT produce conversational text or questions in the final initerary, you will just include the information relevant to the trip.
+    Finally, Delegate to the analyst to calculate the total cost of flights (ensure you multiply the ticket cost by the number of travelers) and hotels (this means the tool name will be "delegate", and tool input will be json containing the "worker_name" and the "task", you WILL NOT attempt to use the Analyst as the tool name, this WILL NOT WORK). If the user defined a budget ensure the total price is within that, or the lowest cost flights and hotels were chosen if the user's budget is too low to be met.\n
+    Then you will produce a easy to read, well formatted itinerary with flight info (including flight number), hotel info, and activites for each day of the trip.
+    You will NOT produce conversational text or questions in the final answer, you will just include the information relevant to the trip.
     \n\n
     USER REQUEST:\n
     {user_request}
