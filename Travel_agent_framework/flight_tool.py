@@ -99,7 +99,8 @@ class FlightTool(AbstractTool):
                         dep_time = segment["departure"]["at"]
                         arr_time = segment["arrival"]["at"]
                         output_str += (f"    flight number [{flightNumber}]: {dep} -> {arr} ({dep_time} -> {arr_time})")
-
+            if(len(data.get("data", [])) == 0):
+                output_str += "No available flights given the input parameters."
             return output_str
         except requests.exceptions.RequestException as e:
             return(f"API request failed: {e}\nDetails: {data["errors"][0]["detail"]}")

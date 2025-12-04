@@ -136,21 +136,28 @@ async def main():
     # ======== Prompt and response ==============
     user_request = input("Where do you want to go and when: ")
     workflow_steps = [
-        "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints. The price shown will be for 1 adult, and so total cost of flights will be number of travelers times the ticket price.",
+        "Delegate to the 'flight_researcher' to find flight options for the trip, pick flights based on user constraints. The price shown will be for 1 ticket. Ask the researcher to return flight numbers and times.",
         "Delegate to the the 'hotel_researcher' to find hotel options, pick a hotel based on user constraints. You WILL NOT request locations more specific than a city, DO NOT request specific neighboorhoods or attractions.",
         "Come up with activites for each day",
     ]
     master_prompt = f"""
-    Coordinate with your team to produce a vacation plan for the user.\n
+    Coordinate with your team to produce a complete vacation plan for the user.\n
     Use the user's request as a guide for planning. If the request is specific you will follow their request, if it is non-specific you will still plan a specific trip based on their request, selecting locations and activities you believe the user will enjoy.\n 
     Then,for each location in the trip you will:\n
     {"".join([f"{i+1}. {step}\n" for i, step in enumerate(workflow_steps)])}
+    If the trip involves multiple locations you must consider travel between the different locations. If the distance between the locations requires a flight, you must find flights, if not you must say whether the user will drive, take the train, or take a bus.
     You will then select one flight and hotel pairing for the trip\n
-    Finally, Delegate to the analyst to calculate the total cost of all flights and hotels (you MUST multiply the ticket cost you recevied from the flight researcher by the number of travelers to get the total cost of tickets).
+    Finally, Delegate to the analyst to calculate the total cost of all flights and hotels (you MUST tell the analyst to multiply the ticket cost you recevied from the flight researcher by the number of travelers to get the total cost of tickets).
     You WILL NOT tell the analyst the number of nights in each location, the price of the hotels already takes this into account.  
     If the user defined a budget ensure the total price is within that, if the total cost exceeds the budget you WILL NOT TRY AGAIN.
     You will return the itinerary anyway with a note explaining that the budget could not be met.\n
-    Then you will produce a easy to read, well formatted itinerary with all flight times, flight numbers, hotel info, and activites for each day of the trip.
+    Itinerary instructions:\n
+    Then you will produce a easy to read, well formatted itinerary with all flight times, flight numbers, hotel info, and activites for each day of the trip.\n
+    Required items:\n
+    Flight number, times, and airport information\n
+    Hotel information\n
+    Activities for each day of the trip\n
+    Cost of trip, broken down into flight cost, hotel cost, and a total cost\n
     You WILL NOT produce conversational text or questions for the user in the final answer, you will just include the information relevant to the trip.
     \n\n
     USER REQUEST:\n
