@@ -165,7 +165,7 @@ class ManagerPlanner(AbstractPlanner):
                     raise KeyError("Parsed action JSON is missing 'tool_name' or 'tool_input'.")
                 
             # Manager will sometimes use a worker as a tool instead of delegating to it
-            if(tool_name.lower() != "delegate"):
+            if(tool_name.lower() != "delegate" and tool_name.lower != "final_answer"):
                 print("TRIED TO USE A WORKER AS A TOOL")
                 input = {"worker_name":tool_name, "task":tool_input}
                 tool_name = "delegate"

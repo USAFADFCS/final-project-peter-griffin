@@ -91,8 +91,8 @@
 
 <div class="container">
     <h1>Multi-Agent Travel Planner</h1>
-
-    <form action="/plan" method="post">
+    <iframe id="downloadFrame" name="downloadFrame" style="display:none;"></iframe>
+    <form action="/plan" method="post" target="downloadFrame">
         <div id="loading" style="
             display:none;
             margin-top:20px;
@@ -140,15 +140,25 @@
     <p>Your custom AI-powered itinerary will be generated as a PDF.</p>
 </div>
 <script>
-    document.querySelector("form").addEventListener("submit", function () {
-        // Show loading animation
-        document.getElementById("loading").style.display = "block";
+    const form = document.querySelector("form");
+    const loading = document.getElementById("loading");
+    const button = document.querySelector("button[type=submit]");
+    const iframe = document.getElementById("downloadFrame");
 
-        // Disable the button so people don’t click it 12 times like they always do
-        const btn = document.querySelector("button[type=submit]");
-        btn.disabled = true;
-        btn.textContent = "Please wait...";
+    // Show loading spinner when submitting
+    form.addEventListener("submit", () => {
+        loading.style.display = "block";
+        button.disabled = true;
+        button.textContent = "Please wait...";
     });
+
+    // Hide spinner once the iframe receives the PDF (aka response finished)
+    iframe.onload = () => {
+        console.log("IFRAME LOADED")
+        loading.style.display = "none";
+        button.disabled = false;
+        button.textContent = "Plan Trip";
+    };
 </script>
 
 </body>

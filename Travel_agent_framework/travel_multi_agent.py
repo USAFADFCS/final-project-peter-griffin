@@ -61,7 +61,7 @@ async def main():
     print("\n📚 Initializing fairlib.core.components...")
     llm = OpenAIAdapter(
         api_key=settings.api_keys.openai_api_key,
-        model_name="gpt-4.1-2025-04-14"
+        model_name="gpt-4.1-mini-2025-04-14"
     )
 
     # --- Step 3: Create Specialized Worker Agents ---
@@ -136,20 +136,22 @@ async def main():
     # ======== Prompt and response ==============
     user_request = input("Where do you want to go and when: ")
     workflow_steps = [
-        "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints. The returned price will be for 1 adult, and so total cost will need to be calculated for more than one adult.",
+        "Delegate to the 'flight_researcher' to find flight options, pick a flight based on user constraints. The price shown will be for 1 adult, and so total cost of flights will be number of travelers times the ticket price.",
         "Delegate to the the 'hotel_researcher' to find hotel options, pick a hotel based on user constraints. You WILL NOT request locations more specific than a city, DO NOT request specific neighboorhoods or attractions.",
         "Come up with activites for each day",
     ]
     master_prompt = f"""
     Coordinate with your team to produce a vacation plan for the user.\n
     Use the user's request as a guide for planning. If the request is specific you will follow their request, if it is non-specific you will still plan a specific trip based on their request, selecting locations and activities you believe the user will enjoy.\n 
-    After locations have been selected
-    for each location in the trip you will:\n
+    Then,for each location in the trip you will:\n
     {"".join([f"{i+1}. {step}\n" for i, step in enumerate(workflow_steps)])}
     You will then select one flight and hotel pairing for the trip\n
-    Finally, Delegate to the analyst to calculate the total cost of flights (ensure you multiply the ticket cost by the number of travelers) and hotels (this means the tool name will be "delegate", and tool input will be json containing the "worker_name" and the "task", you WILL NOT attempt to use the Analyst as the tool name, this WILL NOT WORK). If the user defined a budget ensure the total price is within that, or the lowest cost flights and hotels were chosen if the user's budget is too low to be met.\n
-    Then you will produce a easy to read, well formatted itinerary with flight info (including flight number), hotel info, and activites for each day of the trip.
-    You will NOT produce conversational text or questions in the final answer, you will just include the information relevant to the trip.
+    Finally, Delegate to the analyst to calculate the total cost of all flights and hotels (you MUST multiply the ticket cost you recevied from the flight researcher by the number of travelers to get the total cost of tickets).
+    You WILL NOT tell the analyst the number of nights in each location, the price of the hotels already takes this into account.  
+    If the user defined a budget ensure the total price is within that, if the total cost exceeds the budget you WILL NOT TRY AGAIN.
+    You will return the itinerary anyway with a note explaining that the budget could not be met.\n
+    Then you will produce a easy to read, well formatted itinerary with all flight times, flight numbers, hotel info, and activites for each day of the trip.
+    You WILL NOT produce conversational text or questions for the user in the final answer, you will just include the information relevant to the trip.
     \n\n
     USER REQUEST:\n
     {user_request}
@@ -157,7 +159,7 @@ async def main():
     
     try:
         final_evaluation = await team_runner.arun(master_prompt)
-        print("\n\n==============TRAVEL ITINERARY==============\n\n")
+        print("\n\n_________________________TRAVEL ITINERARY_________________________\n\n")
         print(final_evaluation)
     except Exception as e:
         print(json.dumps({"error": f"A an error occurred: {e}"}))

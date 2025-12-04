@@ -34,7 +34,7 @@ async def plan(
     notes: str = Form("None")
 ):
     user_request = f"I want to leave {origin} and go to {destination} for {nights} nights starting {departure_date}. I don't want to spend more than {budget} on flights and hotels. EXTRA NOTES: {notes}"
-    # I want to leave Denver and go to Alaska for 14 nights starting 06/03/2025. I don't want to spend more than 10000 on flights and hotels. EXTRA NOTES: 3 adults, interested in hiking and outdoors.
+    # I want to leave Denver and go to Europe for 21 nights starting 03/11/2026. I don't want to spend more than 15000 on flights and hotels. EXTRA NOTES: 2 adults, interested in art and culture.
 
     try:
         itinerary_text = await asyncio.to_thread(

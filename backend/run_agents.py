@@ -5,7 +5,7 @@ import re
 import sys
 
 
-def run_multi_agent_and_get_itinerary(user_request: str, timeout: int = 300) -> str:
+def run_multi_agent_and_get_itinerary(user_request: str, timeout: int = 5000) -> str:
     """
     Runs the multi-agent script as a subprocess, provides the user_request to its stdin,
     captures stdout, and extracts the itinerary block.
@@ -35,7 +35,7 @@ def run_multi_agent_and_get_itinerary(user_request: str, timeout: int = 300) -> 
         fp.write(stdout)
 
     # Extract itinerary starting at the marker if present
-    marker = '==============TRAVEL ITINERARY=============='
+    marker = '_________________________TRAVEL ITINERARY_________________________'
     if marker in stdout:
         itinerary = stdout.split(marker, 1)[1].strip()
         # Prepend marker for clarity

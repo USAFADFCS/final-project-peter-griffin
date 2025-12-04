@@ -98,7 +98,7 @@ class FlightTool(AbstractTool):
                         arr = segment["arrival"]["iataCode"]
                         dep_time = segment["departure"]["at"]
                         arr_time = segment["arrival"]["at"]
-                        output_str += (f"    {flightNumber}: {dep} -> {arr} ({dep_time} -> {arr_time})")
+                        output_str += (f"    flight number [{flightNumber}]: {dep} -> {arr} ({dep_time} -> {arr_time})")
 
             return output_str
         except requests.exceptions.RequestException as e:
